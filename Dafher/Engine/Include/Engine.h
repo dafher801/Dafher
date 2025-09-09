@@ -1,7 +1,7 @@
 #ifndef __ENGINE_H__
 #define __ENGINE_H__
 
-#include "stdafx.h"
+#include "Stdafx.h"
 
 class Engine
 {

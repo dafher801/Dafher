@@ -82,6 +82,12 @@
 
 # Visual Studio cache and temporary files
 .vs/
+Debug/
+Release/
+x64/
+Win32/
+ARM/
+ARM64/
 
 # Visual Studio solution state files
 *.sln.docstates

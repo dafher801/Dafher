@@ -14,9 +14,6 @@
     <ClCompile Include="Source\Engine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Source\pch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GraphicDevice.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -25,13 +22,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\framework.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\pch.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\stdafx.h">
+    <ClInclude Include="Include\Stdafx.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="Include\GraphicDevice.h">

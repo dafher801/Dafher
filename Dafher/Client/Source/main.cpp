@@ -1,11 +1,9 @@
-﻿#include "stdafx.h"
-#include "Engine.h"
+﻿#include "Engine.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
 	Engine::GetInstance().Init();
 
-    // 메시지 루프
     MSG msg;
     while (true)
     {

@@ -1,7 +1,7 @@
 #ifndef __WINDOW_H__
 #define __WINDOW_H__
 
-#include "stdafx.h"
+#include "Stdafx.h"
 
 class Window
 {
