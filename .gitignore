@@ -1,4 +1,8 @@
-# Prerequisites
+# ==================================================
+# C++ Build Artifacts
+# ==================================================
+
+# Prerequisites (dependency files)
 *.d
 
 # Compiled Object files
@@ -11,20 +15,26 @@
 *.gch
 *.pch
 
-# Linker files
-*.ilk
+# ==================================================
+# Linker & Debug Files
+# ==================================================
 
-# Debugger Files
+# Linker intermediate files
+*.ilk
+*.idb
+
+# Debug information files
 *.pdb
+*.dwo
+
+# ==================================================
+# Libraries & Executables
+# ==================================================
 
 # Compiled Dynamic libraries
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
 
 # Compiled Static libraries
 *.lai
@@ -37,5 +47,44 @@
 *.out
 *.app
 
-# debug information files
-*.dwo
+# ==================================================
+# Fortran Specific
+# ==================================================
+
+# Fortran module files
+*.mod
+*.smod
+
+# ==================================================
+# Build System Generated Files
+# ==================================================
+
+# Build logs and tracking files
+*.log
+*.tlog
+
+# Compiled resource files
+*.res
+
+# MSBuild recipe files
+*.recipe
+*.lib.recipe
+*.exe.recipe
+*.dll.recipe
+
+# MSBuild file tracking
+*.FileListAbsolute.txt
+*.vcxproj.FileListAbsolute.txt
+
+# ==================================================
+# Visual Studio IDE Files
+# ==================================================
+
+# Visual Studio cache and temporary files
+.vs/
+
+# Visual Studio solution state files
+*.sln.docstates
+
+# MonoDevelop/Xamarin user preferences
+*.userprefs
