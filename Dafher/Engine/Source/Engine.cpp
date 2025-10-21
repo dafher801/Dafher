@@ -58,18 +58,23 @@ void Engine::Init() noexcept
 	_currentFrameTime = _lastFrameTime;
 }
 
-void Engine::Update() noexcept
+void Engine::PreUpdate() noexcept
 {
 	CalculateDeltaTime();
-	
+
+	_currentScene->PreUpdate(_deltaTime);
+}
+
+void Engine::Update() noexcept
+{
 	_currentScene->Update(_deltaTime);
 }
 
-void Engine::Render() noexcept
+void Engine::PostUpdate() noexcept
 {
 	_graphicDevice->BeginFrame();
 
-	_currentScene->Render();
+	_currentScene->PostUpdate(_deltaTime);
 
 	_graphicDevice->EndFrame();
 }

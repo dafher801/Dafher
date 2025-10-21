@@ -12,7 +12,6 @@ public:
 public:
 
 	virtual bool Init() override;
-	virtual void Update(float delta) override;
 };
 
 #endif

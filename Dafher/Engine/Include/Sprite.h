@@ -1,13 +1,13 @@
 #ifndef __SPRITE_H__
 #define __SPRITE_H__
 
-#include "Node.h"
+#include "Component.h"
 
-class Sprite : public Node
+class Sprite : public Component
 {
-public:
+protected:
 	inline Sprite() noexcept
-		: Node()
+		: Component()
 		, _texture(nullptr)
 		, _isPlaying(false)
 		, _loop(true)
@@ -20,16 +20,21 @@ public:
 
 	Sprite(const std::string& textureKey) noexcept;
 
-	~Sprite() noexcept = default;
-
 	Sprite(const Sprite& sprite) noexcept = delete;
-	Sprite& operator=(const Sprite& sprite) noexcept = delete;
 	Sprite(Sprite&& sprite) noexcept = delete;
+	Sprite& operator=(const Sprite& sprite) noexcept = delete;
+	Sprite& operator=(Sprite&& sprite) noexcept = delete;
+
+public:
+	CREATE(Sprite)
+
+	~Sprite() noexcept = default;
 
 public:
 	virtual bool Init() override;
+	virtual void PreUpdate(float delta) override;
 	virtual void Update(float delta) override;
-	virtual void Render() override;
+	virtual void PostUpdate(float delta) override;
 
 	inline void Play(bool loop = true) noexcept
 	{

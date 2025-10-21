@@ -22,7 +22,7 @@ public:
 	bool Init(HWND hWnd) noexcept;
 	void BeginFrame() noexcept;
 	void EndFrame() noexcept;
-	void Clear() noexcept;	
+	void Clear() noexcept;
 
 	inline ComPtr<ID3D11Device> GetD11Device() const noexcept
 	{

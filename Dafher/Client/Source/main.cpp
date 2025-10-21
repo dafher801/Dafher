@@ -17,8 +17,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         }
         else
         {
+            Engine::GetInstance()->PreUpdate();
             Engine::GetInstance()->Update();
-			Engine::GetInstance()->Render();
+			Engine::GetInstance()->PostUpdate();
         }
     }
 

@@ -4,9 +4,10 @@
 #include "TextureManager.h"
 #include "Texture.h"
 #include "Renderer.h"
+#include "Node.h"
 
 Sprite::Sprite(const std::string& textureKey) noexcept
-    : Node()
+    : Component()
     , _isPlaying(false)
     , _loop(true)
     , _currentFrameIndex(0)
@@ -19,23 +20,21 @@ Sprite::Sprite(const std::string& textureKey) noexcept
 
 bool Sprite::Init()
 {
-    Node::Init();
-
     return true;
+}
+
+void Sprite::PreUpdate(float delta)
+{
 }
 
 void Sprite::Update(float delta)
 {
-	Node::Update(delta);
-
 	UpdateAnimation(delta);
 }
 
-void Sprite::Render()
+void Sprite::PostUpdate(float delta)
 {
-    Node::Render();
-
-    Engine::GetInstance()->GetRenderer()->Draw(_texture, _transform.GetMatrix());
+    Engine::GetInstance()->GetRenderer()->Draw(_texture, _owner->_transform.GetMatrix());
 }
 
 void Sprite::AddFrame(const std::string& textureKey, float duration)

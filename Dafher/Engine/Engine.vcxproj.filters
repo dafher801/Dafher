@@ -41,6 +41,9 @@
     <ClCompile Include="Source\Transform.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Include\MovementComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Stdafx.h">
@@ -74,6 +77,12 @@
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="Include\Transform.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Component.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MovementComponent.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
   </ItemGroup>

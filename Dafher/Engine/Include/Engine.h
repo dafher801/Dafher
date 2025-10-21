@@ -23,8 +23,9 @@ public:
 
 public:
 	void Init() noexcept;
+	void PreUpdate() noexcept;
 	void Update() noexcept;
-	void Render() noexcept;
+	void PostUpdate() noexcept;
 	void Clear() noexcept;
 
 	inline class GraphicDevice* GetDevice() const noexcept

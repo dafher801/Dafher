@@ -51,6 +51,19 @@ struct MatrixData
 	Matrix _projection;
 };
 
-#define ASSERT_HR(__hr__) { HRESULT HR = __hr__; assert(SUCCEEDED(HR)); }
+#define ASSERT_HR(__HR__) { HRESULT HR = __HR__; assert(SUCCEEDED(HR)); }
+
+#define CREATE(__TYPE_NAME__) \
+    template<typename... Args> \
+    static __TYPE_NAME__* Create(Args&&... args) \
+    { \
+        __TYPE_NAME__* node = new __TYPE_NAME__(std::forward<Args>(args)...); \
+        if (node && node->Init()) \
+        { \
+            return node; \
+        } \
+        delete node; \
+        return nullptr; \
+    }
 
 #endif

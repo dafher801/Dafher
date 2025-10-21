@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Include\MovementComponent.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\GraphicDevice.cpp" />
     <ClCompile Include="Source\Node.cpp" />
@@ -31,8 +32,10 @@
     <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Component.h" />
     <ClInclude Include="Include\Engine.h" />
     <ClInclude Include="Include\GraphicDevice.h" />
+    <ClInclude Include="Include\MovementComponent.h" />
     <ClInclude Include="Include\Node.h" />
     <ClInclude Include="Include\Renderer.h" />
     <ClInclude Include="Include\Scene.h" />

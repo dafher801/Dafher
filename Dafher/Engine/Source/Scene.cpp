@@ -1,11 +1,17 @@
 #include "Scene.h"
 #include "Sprite.h"
+#include "MovementComponent.h"
 
 bool Scene::Init()
 {
 	Node::Init();
 
-	Sprite* sprite = new Sprite();
+	Node* object = Node::Create();
+	object->_transform.SetPosition(Vector3(1000.0f, 500.0f, 0.0f));
+	object->_transform.SetScale(Vector3(400.0f, 400.0f, 1.0f));
+	this->AddChild(object);
+
+	Sprite* sprite = object->AddComponent<Sprite>();
 	
 	for (int i = 0; i < 8; ++i)
 	{
@@ -13,14 +19,11 @@ bool Scene::Init()
 		sprite->AddFrame(textureKey, 0.1f);
 	}
 
-	sprite->_transform.SetPosition(Vector3(1000.0f, 500.0f, 0.0f));
-	sprite->_transform.SetScale(Vector3(400.0f, 400.0f, 1.0f));
 	sprite->Play(true);
-	this->AddChild(sprite);
-	return true;
-}
 
-void Scene::Update(float delta)
-{
-	Node::Update(delta);
+	MovementComponent* movement = object->AddComponent<MovementComponent>();
+	movement->SetSpeed(100.0f);
+	movement->SetVelocity(Vector3(-1.0f, 0.0f, 0.0f));
+
+	return true;
 }
