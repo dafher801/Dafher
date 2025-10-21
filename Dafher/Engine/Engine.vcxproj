@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,13 +21,33 @@
   <ItemGroup>
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\GraphicDevice.cpp" />
+    <ClCompile Include="Source\Node.cpp" />
+    <ClCompile Include="Source\Renderer.cpp" />
+    <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\Sprite.cpp" />
+    <ClCompile Include="Source\Texture.cpp" />
+    <ClCompile Include="Source\TextureManager.cpp" />
+    <ClCompile Include="Source\Transform.cpp" />
     <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Engine.h" />
     <ClInclude Include="Include\GraphicDevice.h" />
+    <ClInclude Include="Include\Node.h" />
+    <ClInclude Include="Include\Renderer.h" />
+    <ClInclude Include="Include\Scene.h" />
+    <ClInclude Include="Include\Sprite.h" />
     <ClInclude Include="Include\Stdafx.h" />
+    <ClInclude Include="Include\Texture.h" />
+    <ClInclude Include="Include\TextureManager.h" />
+    <ClInclude Include="Include\Transform.h" />
     <ClInclude Include="Include\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Resources\Sample.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -83,19 +103,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Lib</OutDir>
-    <IncludePath>$(MSBuildProjectDirectory)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Lib</OutDir>
-    <IncludePath>$(MSBuildProjectDirectory)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Lib</OutDir>
-    <IncludePath>$(MSBuildProjectDirectory)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Lib</OutDir>
-    <IncludePath>$(MSBuildProjectDirectory)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,8 +129,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(MSBuildProjectDirectory)\Include\</PrecompiledHeaderOutputFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -124,8 +149,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(MSBuildProjectDirectory)\Include\</PrecompiledHeaderOutputFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -141,8 +167,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(MSBuildProjectDirectory)\Include\</PrecompiledHeaderOutputFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -160,8 +187,9 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(MSBuildProjectDirectory)\Include\</PrecompiledHeaderOutputFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -171,5 +199,12 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\directxtk_desktop_2019.2025.7.10.1\build\native\directxtk_desktop_2019.targets" Condition="Exists('..\packages\directxtk_desktop_2019.2025.7.10.1\build\native\directxtk_desktop_2019.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>이 프로젝트는 이 컴퓨터에 없는 NuGet 패키지를 참조합니다. 해당 패키지를 다운로드하려면 NuGet 패키지 복원을 사용하십시오. 자세한 내용은 http://go.microsoft.com/fwlink/?LinkID=322105를 참조하십시오. 누락된 파일은 {0}입니다.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\directxtk_desktop_2019.2025.7.10.1\build\native\directxtk_desktop_2019.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2019.2025.7.10.1\build\native\directxtk_desktop_2019.targets'))" />
+  </Target>
 </Project>

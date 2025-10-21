@@ -2,7 +2,7 @@
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-	Engine::GetInstance().Init();
+	Engine::GetInstance()->Init();
 
     MSG msg;
     while (true)
@@ -17,11 +17,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         }
         else
         {
-            Engine::GetInstance().Update();
+            Engine::GetInstance()->Update();
+			Engine::GetInstance()->Render();
         }
     }
 
-    Engine::GetInstance().Clear();
+    Engine::GetInstance()->Clear();
     FreeConsole();
     return (int)msg.wParam;
 }

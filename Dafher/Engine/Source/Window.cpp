@@ -1,13 +1,8 @@
-#include "Window.h"
-
-Window::Window() noexcept
-	: hWnd(nullptr)
-{
-}
+﻿#include "Window.h"
 
 void Window::Init() noexcept
 {
-	HINSTANCE hInstance = GetModuleHandle(nullptr);
+    HINSTANCE hInstance = GetModuleHandle(nullptr);
 
     WNDCLASSEXW wcex = {};
     wcex.cbSize = sizeof(WNDCLASSEX);
@@ -20,15 +15,10 @@ void Window::Init() noexcept
 
     RegisterClassExW(&wcex);
 
-    hWnd = CreateWindowW(L"MinimalWindow", L"최소한의 창", WS_OVERLAPPEDWINDOW,
+    _hWnd = CreateWindowW(L"MinimalWindow", L"최소한의 창", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
-    ShowWindow(hWnd, SW_SHOW);
-}
-
-HWND Window::GetHwnd() const noexcept
-{
-    return hWnd;
+    ShowWindow(_hWnd, SW_SHOW);
 }
 
 LRESULT CALLBACK Window::Procedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) noexcept

@@ -1,15 +1,30 @@
-#ifndef __STDAFX_H__
+﻿#ifndef __STDAFX_H__
 #define __STDAFX_H__
 
 #include <Windows.h>
 #include <tchar.h>
-#include <d3d11.h>
+#include <assert.h>
+#include <algorithm>
+#include <cctype>
+#include <cwctype>
+#include <filesystem>
 #include <memory>
+#include <string>
+#include <unordered_map>
+#include <cmath>
+#include <chrono>
+#include <memory_resource>
+
+#include <d3d11.h>
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
 #include <wrl/client.h>
+#include <SimpleMath.h>
 
 #pragma comment(lib, "Engine.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3dcompiler.lib")
 
 using int8 = __int8;
 using int16 = __int16;
@@ -20,10 +35,22 @@ using uint16 = unsigned __int16;
 using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
 
-using namespace std;
 using namespace Microsoft::WRL;
+using namespace DirectX::SimpleMath;
 
-#define CHECK_HR(hr) if (FAILED(hr)) { return false; }
-#define CHECK_INIT(init) if (init) { return false; }
+struct Vertex
+{
+	float _x, _y, _z;
+    float _u, _v;
+};
+
+struct MatrixData
+{
+	Matrix _world;
+	Matrix _view;
+	Matrix _projection;
+};
+
+#define ASSERT_HR(__hr__) { HRESULT HR = __hr__; assert(SUCCEEDED(HR)); }
 
 #endif

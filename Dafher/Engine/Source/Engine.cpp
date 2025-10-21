@@ -1,42 +1,94 @@
 ﻿#include "Engine.h"
 #include "Window.h"
 #include "GraphicDevice.h"
+#include "TextureManager.h"
+#include "Renderer.h"
+#include "Scene.h"
 
 Engine::Engine() noexcept
-	: window(make_shared<Window>())
-	, graphicDevice(make_shared<GraphicDevice>())
+	: _window(std::make_unique<Window>())
+	, _graphicDevice(std::make_unique<GraphicDevice>())
+	, _textureManager(std::make_unique<TextureManager>())
+	, _renderer(std::make_unique<Renderer>())
+	, _currentScene(std::make_unique<Scene>())
+	, _deltaTime(0.0f)
 {
+
 }
 
 Engine::~Engine() noexcept
 {
-	window.reset();
-	graphicDevice.reset();
+	_window.reset();
+	_graphicDevice.reset();
 }
 
-Engine& Engine::GetInstance() noexcept
+Engine* Engine::GetInstance() noexcept
 {
-	static Engine instance;
+	static Engine* instance = new Engine;
+
 	return instance;
+}
+
+void Engine::SetCurrentScene(Scene* scene) noexcept
+{
+	assert(scene != nullptr);
+
+	_currentScene.reset(scene);
+	_currentScene->Init();
+}
+
+void Engine::ChangeScene(Scene* scene) noexcept
+{
+	assert(scene != nullptr);
+
+	_currentScene->Clear();
+	_currentScene.reset(scene);
+	_currentScene->Init();
 }
 
 void Engine::Init() noexcept
 {
-	window->Init();
-	graphicDevice->Init();
+	_window->Init();
+	_graphicDevice->Init(_window->_hWnd);
+	_textureManager->Init(GetDevice()->GetD11Device());
+	_renderer->Init(GetDevice()->GetD11Device(), GetDevice()->GetContext());
+	_currentScene->Init();
+
+	_lastFrameTime = std::chrono::steady_clock::now();
+	_currentFrameTime = _lastFrameTime;
 }
 
 void Engine::Update() noexcept
 {
-	graphicDevice->Render();
+	CalculateDeltaTime();
+	
+	_currentScene->Update(_deltaTime);
+}
+
+void Engine::Render() noexcept
+{
+	_graphicDevice->BeginFrame();
+
+	_currentScene->Render();
+
+	_graphicDevice->EndFrame();
 }
 
 void Engine::Clear() noexcept
 {
-	graphicDevice->Clear();
+	_graphicDevice->Clear();
 }
 
-shared_ptr<class Window> Engine::GetWindow() const noexcept
+void Engine::CalculateDeltaTime() noexcept
 {
-	return window;
+	_currentFrameTime = std::chrono::steady_clock::now();
+	std::chrono::duration<float> timeSpan = _currentFrameTime - _lastFrameTime;
+	_deltaTime = timeSpan.count();
+
+	if (_deltaTime > 1.0f / 60.0f)
+	{
+		_deltaTime = 1.0f / 60.0f;
+	}
+
+	_lastFrameTime = _currentFrameTime;
 }
