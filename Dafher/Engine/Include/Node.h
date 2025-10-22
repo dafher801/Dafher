@@ -2,7 +2,6 @@
 #define __NODE_H__
 
 #include "Transform.h"
-#include "Component.h"
 
 class Node
 {
@@ -10,6 +9,7 @@ protected:
     inline Node() noexcept
         : _parent(nullptr)
         , _enabled(true)
+        , _transform(nullptr)
     {
     }
 
@@ -26,10 +26,11 @@ public:
 public:
     inline void AddChild(Node* child) noexcept
     {
-		assert(child != nullptr);
+        assert(child != nullptr);
 
         _children.push_back(std::unique_ptr<Node>(child));
         child->_parent = this;
+        child->_transform->MarkWorldMatrixDirty();
     }
 
     void RemoveChild(Node* child) noexcept;
@@ -45,13 +46,6 @@ public:
     }
 
     Node* GetChildByName(const std::string& name) const noexcept;
-
-    inline const Matrix& GetLocalMatrix() const noexcept
-    {
-        return _transform.GetMatrix();
-    }
-
-    Matrix GetWorldMatrix() const noexcept;
 
     inline void SetEnabled(bool enabled) noexcept
     {
@@ -110,25 +104,26 @@ public:
         auto it = std::remove_if(_components.begin(), _components.end(),
             [](const std::unique_ptr<Component>& component)
             {
-                return component.get() != nullptr;
+                return dynamic_cast<T*>(component.get()) != nullptr;
             });
 
         _components.erase(it, _components.end());
     }
 
+public:
     virtual bool Init();
-	virtual void PreUpdate(float delta);
+    virtual void PreUpdate(float delta);
     virtual void Update(float delta);
     virtual void PostUpdate(float delta);
     virtual void Clear();
 
 public:
-    Transform _transform;
+    Transform* _transform;
 
 protected:
     Node* _parent;
     std::vector<std::unique_ptr<Node>> _children;
-	std::vector<std::unique_ptr<Component>> _components;
+    std::vector<std::unique_ptr<Component>> _components;
 
     bool _enabled;
 

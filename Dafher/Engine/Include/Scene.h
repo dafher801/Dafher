@@ -5,8 +5,17 @@
 
 class Scene : public Node
 {
-public:
+protected:
 	Scene() noexcept = default;
+
+	Scene(const Scene& scene) noexcept = delete;
+	Scene(Scene&& scene) noexcept = delete;
+	Scene& operator=(const Scene& scene) noexcept = delete;
+	Scene& operator=(Scene&& scene) noexcept = delete;
+
+public:
+	CREATE(Scene)
+
 	~Scene() noexcept = default;
 
 public:

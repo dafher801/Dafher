@@ -2,7 +2,6 @@
 #include "GraphicDevice.h"
 #include "Engine.h"
 #include "TextureManager.h"
-#include "Texture.h"
 #include "Renderer.h"
 #include "Node.h"
 
@@ -10,12 +9,31 @@ Sprite::Sprite(const std::string& textureKey) noexcept
     : Component()
     , _isPlaying(false)
     , _loop(true)
+    , _isDirty(false)
     , _currentFrameIndex(0)
     , _frameTimer(0.0f)
     , _color(Vector4::One)
+    , _size(Vector2::Zero)
     , _onAnimationComplete(nullptr)
 {
     _texture = Engine::GetInstance()->GetTextureManager()->GetTexture(textureKey);
+	_size.x = static_cast<float>(_texture->GetWidth());
+	_size.y = static_cast<float>(_texture->GetHeight());
+}
+
+Sprite::Sprite(const std::string& textureKey, uint32 width, uint32 height) noexcept
+    : Component()
+    , _isPlaying(false)
+    , _loop(true)
+    , _isDirty(false)
+    , _currentFrameIndex(0)
+    , _frameTimer(0.0f)
+    , _color(Vector4::One)
+    , _size(Vector2(static_cast<float>(width), static_cast<float>(height)))
+    , _onAnimationComplete(nullptr)
+{
+    _texture = Engine::GetInstance()->GetTextureManager()->GetTexture(textureKey);
+    _texture->Resize(static_cast<uint32>(_size.x), static_cast<uint32>(_size.y));
 }
 
 bool Sprite::Init()
@@ -34,7 +52,21 @@ void Sprite::Update(float delta)
 
 void Sprite::PostUpdate(float delta)
 {
-    Engine::GetInstance()->GetRenderer()->Draw(_texture, _owner->_transform.GetMatrix());
+    if (_texture == nullptr)
+    {
+        return;
+    }
+
+    if (_isDirty)
+    {
+        _texture->Resize(static_cast<uint32>(_size.x), static_cast<uint32>(_size.y));
+		_isDirty = false;
+    }
+
+    Matrix spriteScaleMatrix = DirectX::XMMatrixScaling(_size.x, _size.y, 1.0f);
+    Matrix worldMatrix = spriteScaleMatrix * _owner->_transform->GetWorldMatrix();
+
+    Engine::GetInstance()->GetRenderer()->Draw(_texture, worldMatrix);
 }
 
 void Sprite::AddFrame(const std::string& textureKey, float duration)

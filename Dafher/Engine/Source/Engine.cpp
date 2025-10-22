@@ -10,7 +10,7 @@ Engine::Engine() noexcept
 	, _graphicDevice(std::make_unique<GraphicDevice>())
 	, _textureManager(std::make_unique<TextureManager>())
 	, _renderer(std::make_unique<Renderer>())
-	, _currentScene(std::make_unique<Scene>())
+	, _currentScene(nullptr)
 	, _deltaTime(0.0f)
 {
 
@@ -24,7 +24,12 @@ Engine::~Engine() noexcept
 
 Engine* Engine::GetInstance() noexcept
 {
-	static Engine* instance = new Engine;
+	static Engine* instance;
+
+	if (instance == nullptr)
+	{
+		instance = new Engine();
+	}
 
 	return instance;
 }
@@ -52,7 +57,7 @@ void Engine::Init() noexcept
 	_graphicDevice->Init(_window->_hWnd);
 	_textureManager->Init(GetDevice()->GetD11Device());
 	_renderer->Init(GetDevice()->GetD11Device(), GetDevice()->GetContext());
-	_currentScene->Init();
+	_currentScene = std::unique_ptr<Scene>(Scene::Create());
 
 	_lastFrameTime = std::chrono::steady_clock::now();
 	_currentFrameTime = _lastFrameTime;

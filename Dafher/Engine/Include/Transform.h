@@ -1,250 +1,335 @@
 #ifndef __TRANSFORM_H__
 #define __TRANSFORM_H__
 
-#include "Stdafx.h"
+#include "Component.h"
 
-class Transform
+class Transform : public Component
 {
-public:
-    Transform() noexcept;
-    ~Transform() noexcept = default;
-    Transform(const Transform& transform) noexcept = delete;
-    Transform& operator=(const Transform& transform) noexcept = delete;
-    Transform(Transform&& transform) noexcept = delete;
+protected:
+    Transform() noexcept
+        : _position(Vector3::Zero)
+        , _rotation(Vector3::Zero)
+        , _scale(Vector3::One)
+        , _localMatrix(DirectX::XMMatrixIdentity())
+        , _worldMatrix(DirectX::XMMatrixIdentity())
+        , _isLocalDirty(true)
+        , _isWorldDirty(true)
+    {
+    }
 
-    inline void SetPosition(const Vector3& position) noexcept
+    Transform(const Transform& transform) noexcept = delete;
+    Transform(Transform&& transform) noexcept = delete;
+    Transform& operator=(const Transform& transform) noexcept = delete;
+    Transform& operator=(Transform&& transform) noexcept = delete;
+
+public:
+    CREATE(Transform)
+
+        ~Transform() noexcept = default;
+
+public:
+    inline void SetLocalPosition(const Vector3& position) noexcept
     {
         _position = position;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetPosition(float x, float y, float z = 0.0f) noexcept
+    inline void SetLocalPosition(float x, float y, float z = 0.0f) noexcept
     {
         _position = Vector3(x, y, z);
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline const Vector3& GetPosition() const noexcept
+    inline const Vector3& GetLocalPosition() const noexcept
     {
         return _position;
     }
 
-    inline void SetPositionX(float x) noexcept
+    inline void SetLocalPositionX(float x) noexcept
     {
         _position.x = x;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetPositionY(float y) noexcept
+    inline void SetLocalPositionY(float y) noexcept
     {
         _position.y = y;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetPositionZ(float z) noexcept
+    inline void SetLocalPositionZ(float z) noexcept
     {
         _position.z = z;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline float GetPositionX() const noexcept
+    inline float GetLocalPositionX() const noexcept
     {
         return _position.x;
     }
 
-    inline float GetPositionY() const noexcept
+    inline float GetLocalPositionY() const noexcept
     {
         return _position.y;
     }
 
-    inline float GetPositionZ() const noexcept
+    inline float GetLocalPositionZ() const noexcept
     {
         return _position.z;
     }
 
-    inline void SetRotation(const Vector3& rotation) noexcept
+    void SetWorldPosition(const Vector3& position) noexcept;
+    void SetWorldPosition(float x, float y, float z = 0.0f) noexcept;
+    Vector3 GetWorldPosition() const noexcept;
+
+    void SetWorldPositionX(float x) noexcept;
+    void SetWorldPositionY(float y) noexcept;
+    void SetWorldPositionZ(float z) noexcept;
+
+    float GetWorldPositionX() const noexcept;
+    float GetWorldPositionY() const noexcept;
+    float GetWorldPositionZ() const noexcept;
+
+    inline void SetLocalRotation(const Vector3& rotation) noexcept
     {
         _rotation = rotation;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetRotation(float x, float y, float z = 0.0f) noexcept
+    inline void SetLocalRotation(float x, float y, float z = 0.0f) noexcept
     {
         _rotation = Vector3(x, y, z);
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline const Vector3& GetRotation() const noexcept
+    inline const Vector3& GetLocalRotation() const noexcept
     {
         return _rotation;
     }
 
-    inline void SetRotationX(float x) noexcept
+    inline void SetLocalRotationX(float x) noexcept
     {
         _rotation.x = x;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetRotationY(float y) noexcept
+    inline void SetLocalRotationY(float y) noexcept
     {
         _rotation.y = y;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetRotationZ(float z) noexcept
+    inline void SetLocalRotationZ(float z) noexcept
     {
         _rotation.z = z;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline float GetRotationX() const noexcept
+    inline float GetLocalRotationX() const noexcept
     {
         return _rotation.x;
     }
 
-    inline float GetRotationY() const noexcept
+    inline float GetLocalRotationY() const noexcept
     {
         return _rotation.y;
     }
 
-    inline float GetRotationZ() const noexcept
+    inline float GetLocalRotationZ() const noexcept
     {
         return _rotation.z;
     }
 
-    inline void SetScale(const Vector3& scale) noexcept
+    void SetWorldRotation(const Vector3& rotation) noexcept;
+    void SetWorldRotation(float x, float y, float z = 0.0f) noexcept;
+    Vector3 GetWorldRotation() const noexcept;
+
+    void SetWorldRotationX(float x) noexcept;
+    void SetWorldRotationY(float y) noexcept;
+    void SetWorldRotationZ(float z) noexcept;
+
+    float GetWorldRotationX() const noexcept;
+    float GetWorldRotationY() const noexcept;
+    float GetWorldRotationZ() const noexcept;
+
+    inline void SetLocalScale(const Vector3& scale) noexcept
     {
         _scale = scale;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetScale(float x, float y, float z = 1.0f) noexcept
+    inline void SetLocalScale(float x, float y, float z = 1.0f) noexcept
     {
         _scale = Vector3(x, y, z);
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetScale(float uniformScale) noexcept
+    inline void SetLocalScale(float uniformScale) noexcept
     {
         _scale = Vector3(uniformScale, uniformScale, uniformScale);
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline const Vector3& GetScale() const noexcept
+    inline const Vector3& GetLocalScale() const noexcept
     {
         return _scale;
     }
 
-    inline void SetScaleX(float x) noexcept
+    inline void SetLocalScaleX(float x) noexcept
     {
         _scale.x = x;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetScaleY(float y) noexcept
+    inline void SetLocalScaleY(float y) noexcept
     {
         _scale.y = y;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void SetScaleZ(float z) noexcept
+    inline void SetLocalScaleZ(float z) noexcept
     {
         _scale.z = z;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline float GetScaleX() const noexcept
+    inline float GetLocalScaleX() const noexcept
     {
         return _scale.x;
     }
 
-    inline float GetScaleY() const noexcept
+    inline float GetLocalScaleY() const noexcept
     {
         return _scale.y;
     }
 
-    inline float GetScaleZ() const noexcept
+    inline float GetLocalScaleZ() const noexcept
     {
         return _scale.z;
     }
 
-    inline void Translate(const Vector3& offset) noexcept
+    void SetWorldScale(const Vector3& scale) noexcept;
+    void SetWorldScale(float x, float y, float z = 1.0f) noexcept;
+    void SetWorldScale(float uniformScale) noexcept;
+    Vector3 GetWorldScale() const noexcept;
+
+    void SetWorldScaleX(float x) noexcept;
+    void SetWorldScaleY(float y) noexcept;
+    void SetWorldScaleZ(float z) noexcept;
+
+    float GetWorldScaleX() const noexcept;
+    float GetWorldScaleY() const noexcept;
+    float GetWorldScaleZ() const noexcept;
+
+    inline void TranslateLocal(const Vector3& offset) noexcept
     {
         _position += offset;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void Translate(float x, float y, float z = 0.0f) noexcept
+    inline void TranslateLocal(float x, float y, float z = 0.0f) noexcept
     {
         _position += Vector3(x, y, z);
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void Rotate(const Vector3& angles) noexcept
+    void TranslateWorld(const Vector3& offset) noexcept;
+    void TranslateWorld(float x, float y, float z = 0.0f) noexcept;
+
+    inline void RotateLocal(const Vector3& angles) noexcept
     {
         _rotation += angles;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void Rotate(float x, float y, float z = 0.0f) noexcept
+    inline void RotateLocal(float x, float y, float z = 0.0f) noexcept
     {
         _rotation += Vector3(x, y, z);
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void RotateZ(float angle) noexcept
+    inline void RotateLocalZ(float angle) noexcept
     {
         _rotation.z += angle;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void ScaleBy(const Vector3& factor) noexcept
+    void RotateWorld(const Vector3& angles) noexcept;
+    void RotateWorld(float x, float y, float z = 0.0f) noexcept;
+    void RotateWorldZ(float angle) noexcept;
+
+    inline void ScaleByLocal(const Vector3& factor) noexcept
     {
         _scale.x *= factor.x;
         _scale.y *= factor.y;
         _scale.z *= factor.z;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    inline void ScaleBy(float factor) noexcept
+    inline void ScaleByLocal(float factor) noexcept
     {
         _scale.x *= factor;
         _scale.y *= factor;
         _scale.z *= factor;
-        _isDirty = true;
+        MarkDirty();
     }
 
-    const Matrix& GetMatrix() const noexcept;
+    void ScaleByWorld(const Vector3& factor) noexcept;
+    void ScaleByWorld(float factor) noexcept;
+
+    const Matrix& GetLocalMatrix() const noexcept;
+    const Matrix& GetWorldMatrix() const noexcept;
 
     void Reset() noexcept;
 
-    inline Vector3 GetForward() const noexcept
+    inline Vector3 GetLocalForward() const noexcept
     {
         return Vector3::Forward;
     }
 
-    inline Vector3 GetRight() const noexcept
+    inline Vector3 GetLocalRight() const noexcept
     {
         float angleRad = DirectX::XMConvertToRadians(_rotation.z);
         return Vector3(std::cos(angleRad), std::sin(angleRad), 0.0f);
     }
 
-    inline Vector3 GetUp() const noexcept
+    inline Vector3 GetLocalUp() const noexcept
     {
         float angleRad = DirectX::XMConvertToRadians(_rotation.z);
         return Vector3(-std::sin(angleRad), std::cos(angleRad), 0.0f);
     }
 
+    Vector3 GetWorldForward() const noexcept;
+    Vector3 GetWorldRight() const noexcept;
+    Vector3 GetWorldUp() const noexcept;
+
+    void MarkWorldMatrixDirty() noexcept;
+
+public:
+    virtual bool Init() override;
+    virtual void PreUpdate(float deltaTime) override;
+    virtual void Update(float deltaTime) override;
+    virtual void PostUpdate(float deltaTime) override;
+
 private:
-    void UpdateMatrix() const noexcept;
+    void UpdateLocalMatrix() const noexcept;
+    void UpdateWorldMatrix() const noexcept;
+    void MarkDirty() noexcept;
+
+    Matrix GetParentWorldMatrix() const noexcept;
+    Vector3 ExtractPosition(const Matrix& matrix) const noexcept;
+    Vector3 ExtractRotation(const Matrix& matrix) const noexcept;
+    Vector3 ExtractScale(const Matrix& matrix) const noexcept;
 
 private:
     Vector3 _position;
     Vector3 _rotation;
     Vector3 _scale;
 
-    mutable Matrix _matrix;
-    mutable bool _isDirty;
+    mutable Matrix _localMatrix;
+    mutable Matrix _worldMatrix;
+    mutable bool _isLocalDirty;
+    mutable bool _isWorldDirty;
 };
 
 #endif

@@ -26,7 +26,7 @@ void MovementComponent::Update(float deltaTime)
 			normalized /= length;
 
 			Vector3 movement = normalized * _speed * deltaTime;
-			_owner->_transform.Translate(movement);
+			_owner->_transform->TranslateWorld(movement);
 		}
 	}
 }

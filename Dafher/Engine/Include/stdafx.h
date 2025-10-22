@@ -14,6 +14,7 @@
 #include <cmath>
 #include <chrono>
 #include <memory_resource>
+#include <fstream>
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -57,12 +58,12 @@ struct MatrixData
     template<typename... Args> \
     static __TYPE_NAME__* Create(Args&&... args) \
     { \
-        __TYPE_NAME__* node = new __TYPE_NAME__(std::forward<Args>(args)...); \
-        if (node && node->Init()) \
+        __TYPE_NAME__* object = new __TYPE_NAME__(std::forward<Args>(args)...); \
+        if (object && object->Init()) \
         { \
-            return node; \
+            return object; \
         } \
-        delete node; \
+        delete object; \
         return nullptr; \
     }
 

@@ -1,63 +1,36 @@
 #include "Texture.h"
-#include <assert.h>
-#include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_RESIZE2_IMPLEMENTATION
+
 #include "stb_image.h"
+#include "stb_image_resize2.h"
 
 bool Texture::LoadFromFile(const ComPtr<ID3D11Device>& device, const std::wstring& filePath) noexcept
 {
-    int size = WideCharToMultiByte(CP_UTF8, 0, filePath.c_str(), -1, nullptr, 0, nullptr, nullptr);
-    std::vector<char> buffer(size);
-    WideCharToMultiByte(CP_UTF8, 0, filePath.c_str(), -1, buffer.data(), size, nullptr, nullptr);
+    _device = device;
 
-    int channels;
-    int imageWidth, imageHeight;
-    unsigned char* imageData = stbi_load(buffer.data(), &imageWidth, &imageHeight, &channels, 4);
+    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+    assert(file.is_open());
 
-    if (!imageData)
-    {
-        return false;
-    }
+    std::streamsize fileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
 
-    _width = static_cast<uint32>(imageWidth);
-    _height = static_cast<uint32>(imageHeight);
-    _format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    std::vector<unsigned char> buffer(fileSize);
+    bool readSuccess = file.read(reinterpret_cast<char*>(buffer.data()), fileSize).good();
+    assert(readSuccess);
 
-    D3D11_TEXTURE2D_DESC textureDesc = {};
-    textureDesc.Width = _width;
-    textureDesc.Height = _height;
-    textureDesc.MipLevels = 1;
-    textureDesc.ArraySize = 1;
-    textureDesc.Format = _format;
-    textureDesc.SampleDesc.Count = 1;
-    textureDesc.SampleDesc.Quality = 0;
-    textureDesc.Usage = D3D11_USAGE_DEFAULT;
-    textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    textureDesc.CPUAccessFlags = 0;
-    textureDesc.MiscFlags = 0;
+    bool isLoaded = LoadImageData(buffer.data(), buffer.size());
+	assert(isLoaded);
 
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = imageData;
-    initData.SysMemPitch = _width * 4;
-    initData.SysMemSlicePitch = 0;
+    _width = _originalWidth;
+    _height = _originalHeight;
 
-	ASSERT_HR(device->CreateTexture2D(&textureDesc, &initData, &_texture2D));
-
-    stbi_image_free(imageData);
-
-    CreateShaderResourceView(device);
-
-    return true;
+    return CreateTexture();
 }
 
-bool Texture::CreateFromMemory(const ComPtr<ID3D11Device>& device, const void* data, size_t dataSize) noexcept
+bool Texture::LoadImageData(const void* data, size_t dataSize) noexcept
 {
-    if (!device || !data)
-    {
-        return false;
-    }
-
     int channels;
     int imageWidth, imageHeight;
     unsigned char* imageData = stbi_load_from_memory(
@@ -66,14 +39,51 @@ bool Texture::CreateFromMemory(const ComPtr<ID3D11Device>& device, const void* d
         &imageWidth, &imageHeight, &channels, 4
     );
 
-    if (!imageData)
+	assert(imageData != nullptr);
+
+    _originalWidth = static_cast<uint32>(imageWidth);
+    _originalHeight = static_cast<uint32>(imageHeight);
+    _format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+    size_t dataLength = _originalWidth * _originalHeight * 4;
+    _originalImageData.assign(imageData, imageData + dataLength);
+
+    stbi_image_free(imageData);
+
+    return true;
+}
+
+bool Texture::Resize(uint32 width, uint32 height) noexcept
+{
+    if (_width == width && _height == height && _texture2D != nullptr)
     {
-        return false;
+        return true;
     }
 
-    _width = static_cast<uint32>(imageWidth);
-    _height = static_cast<uint32>(imageHeight);
-    _format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    _width = width;
+    _height = height;
+
+    return CreateTexture();
+}
+
+bool Texture::CreateTexture() noexcept
+{
+	std::vector<unsigned char> finalImageData;
+    bool needResize = (_width != _originalWidth) || (_height != _originalHeight);
+
+    if (needResize)
+    {
+		finalImageData.assign(_width * _height * 4, 0);
+        stbir_resize_uint8_linear(
+            _originalImageData.data(), _originalWidth, _originalHeight, 0,
+            finalImageData.data(), _width, _height, 0,
+            STBIR_RGBA
+        );
+    }
+    else
+    {
+        finalImageData = _originalImageData;
+    }
 
     D3D11_TEXTURE2D_DESC textureDesc = {};
     textureDesc.Width = _width;
@@ -89,20 +99,21 @@ bool Texture::CreateFromMemory(const ComPtr<ID3D11Device>& device, const void* d
     textureDesc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = imageData;
+    initData.pSysMem = finalImageData.data();
     initData.SysMemPitch = _width * 4;
     initData.SysMemSlicePitch = 0;
-    
-	ASSERT_HR(device->CreateTexture2D(&textureDesc, &initData, &_texture2D));
-    
-    stbi_image_free(imageData);
 
-    CreateShaderResourceView(device);
+    _texture2D.Reset();
+    _shaderResourceView.Reset();
 
-    return true;
+    ASSERT_HR(_device->CreateTexture2D(&textureDesc, &initData, &_texture2D));
+
+    finalImageData.clear();
+
+    return CreateShaderResourceView();
 }
 
-bool Texture::CreateShaderResourceView(const ComPtr<ID3D11Device>& device) noexcept
+bool Texture::CreateShaderResourceView() noexcept
 {
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Format = _format;
@@ -110,7 +121,7 @@ bool Texture::CreateShaderResourceView(const ComPtr<ID3D11Device>& device) noexc
     srvDesc.Texture2D.MipLevels = 1;
     srvDesc.Texture2D.MostDetailedMip = 0;
 
-    ASSERT_HR(device->CreateShaderResourceView(_texture2D.Get(), &srvDesc, &_shaderResourceView));
+    ASSERT_HR(_device->CreateShaderResourceView(_texture2D.Get(), &srvDesc, &_shaderResourceView));
 
     return true;
 }

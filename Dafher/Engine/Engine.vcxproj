@@ -19,9 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Include\MovementComponent.cpp" />
+    <Image Include="..\Resources\Sample.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\GraphicDevice.cpp" />
+    <ClCompile Include="Source\MovementComponent.cpp" />
     <ClCompile Include="Source\Node.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
@@ -45,12 +51,6 @@
     <ClInclude Include="Include\TextureManager.h" />
     <ClInclude Include="Include\Transform.h" />
     <ClInclude Include="Include\Window.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\Resources\Sample.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -106,23 +106,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Lib</OutDir>
-    <IncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb_master;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Lib</OutDir>
-    <IncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb_master;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Lib</OutDir>
-    <IncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb_master;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Lib</OutDir>
-    <IncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb_master;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb-master;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -132,7 +132,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(MSBuildProjectDirectory)\Include\</PrecompiledHeaderOutputFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -152,7 +152,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(MSBuildProjectDirectory)\Include\</PrecompiledHeaderOutputFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -170,7 +170,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>Stdafx.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(MSBuildProjectDirectory)\Include\</PrecompiledHeaderOutputFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -190,7 +190,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Include;$(MSBuildProjectDirectory)\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include;$(SolutionDir)Engine\Include\stb_master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>$(MSBuildProjectDirectory)\Include\</PrecompiledHeaderOutputFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>

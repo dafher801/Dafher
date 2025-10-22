@@ -32,22 +32,9 @@ Node* Node::GetChildByName(const std::string& name) const noexcept
     return nullptr;
 }
 
-Matrix Node::GetWorldMatrix() const noexcept
-{
-    assert(_parent != nullptr);
-
-    Matrix worldMatrix = _transform.GetMatrix();
-    worldMatrix = worldMatrix * _parent->GetWorldMatrix();
-
-    return worldMatrix;
-}
-
 bool Node::Init()
 {
-    for (auto& component : _components)
-    {
-        component->Init();
-	}
+    _transform = this->AddComponent<Transform>();
 
     for (auto& child : _children)
     {
@@ -65,7 +52,7 @@ void Node::PreUpdate(float delta)
         {
             component->PreUpdate(delta);
         }
-	}
+    }
 
     for (auto& child : _children)
     {
@@ -116,6 +103,6 @@ void Node::PostUpdate(float delta)
 
 void Node::Clear()
 {
-	_components.clear();
+    _components.clear();
     _children.clear();
 }
