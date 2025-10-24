@@ -42,21 +42,9 @@ void Transform::PostUpdate(float deltaTime)
 
 void Transform::UpdateLocalMatrix() const noexcept
 {
-    Matrix scaleMatrix = DirectX::XMMatrixScaling(_scale.x, _scale.y, _scale.z);
-
-    Matrix rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(
-        DirectX::XMConvertToRadians(_rotation.x),
-        DirectX::XMConvertToRadians(_rotation.y),
-        DirectX::XMConvertToRadians(_rotation.z)
-    );
-
-    Matrix translationMatrix = DirectX::XMMatrixTranslation(
-        _position.x,
-        _position.y,
-        _position.z
-    );
-
-    _localMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+    _localMatrix = Matrix::CreateScale(_scale) *
+        Matrix::CreateFromQuaternion(_rotation) *
+        Matrix::CreateTranslation(_position);
 }
 
 void Transform::UpdateWorldMatrix() const noexcept
@@ -86,10 +74,9 @@ void Transform::MarkWorldMatrixDirty() noexcept
 void Transform::Reset() noexcept
 {
     _position = Vector3::Zero;
-    _rotation = Vector3::Zero;
+    _rotation = Quaternion::Identity;
     _scale = Vector3::One;
-    _isLocalDirty = true;
-    _isWorldDirty = true;
+    MarkDirty();
 }
 
 Matrix Transform::GetParentWorldMatrix() const noexcept
@@ -108,49 +95,94 @@ Matrix Transform::GetParentWorldMatrix() const noexcept
 
 Vector3 Transform::ExtractPosition(const Matrix& matrix) const noexcept
 {
-    return Vector3(matrix.m[3][0], matrix.m[3][1], matrix.m[3][2]);
+    return matrix.Translation();
 }
 
-Vector3 Transform::ExtractRotation(const Matrix& matrix) const noexcept
+Quaternion Transform::ExtractRotation(const Matrix& matrix) const noexcept
 {
-    float pitch, yaw, roll;
-    pitch = std::asin(-matrix.m[2][1]);
+    Vector3 scale = ExtractScale(matrix);
 
-    if (std::cos(pitch) > 0.0001f)
+    Vector3 axisX = Vector3(matrix._11, matrix._12, matrix._13);
+    Vector3 axisY = Vector3(matrix._21, matrix._22, matrix._23);
+    Vector3 axisZ = Vector3(matrix._31, matrix._32, matrix._33);
+
+	axisX = scale.x > TOLERANCE ? axisX / scale.x : Vector3::Right;
+	axisY = scale.y > TOLERANCE ? axisY / scale.y : Vector3::Up;
+	axisZ = scale.z > TOLERANCE ? axisZ / scale.z : Vector3::Forward;
+
+    Matrix rotationMatrix;
+    rotationMatrix._11 = axisX.x;
+    rotationMatrix._12 = axisX.y;
+    rotationMatrix._13 = axisX.z;
+
+    rotationMatrix._21 = axisY.x;
+    rotationMatrix._22 = axisY.y;
+    rotationMatrix._23 = axisY.z;
+
+    rotationMatrix._31 = axisZ.x;
+    rotationMatrix._32 = axisZ.y;
+    rotationMatrix._33 = axisZ.z;
+    
+    rotationMatrix._44 = 1.0f;
+    rotationMatrix._41 = rotationMatrix._42 = rotationMatrix._43 = 0.0f;
+    rotationMatrix._14 = rotationMatrix._24 = rotationMatrix._34 = 0.0f;
+
+    return Quaternion::CreateFromRotationMatrix(rotationMatrix);
+}
+
+Vector3 Transform::ExtractScale(const Matrix& matrix) const noexcept
+{
+    Vector3 scaleX(matrix._11, matrix._12, matrix._13);
+    Vector3 scaleY(matrix._21, matrix._22, matrix._23);
+    Vector3 scaleZ(matrix._31, matrix._32, matrix._33);
+
+    return Vector3(
+        scaleX.Length(),
+        scaleY.Length(),
+        scaleZ.Length()
+    );
+}
+
+Quaternion Transform::EulerToQuaternion(const Vector3& euler) noexcept
+{
+    return Quaternion::CreateFromYawPitchRoll(
+        DirectX::XMConvertToRadians(euler.y),
+        DirectX::XMConvertToRadians(euler.x),
+        DirectX::XMConvertToRadians(euler.z)
+    );
+}
+
+Vector3 Transform::QuaternionToEuler(const Quaternion& quaternion) noexcept
+{
+    float x = quaternion.x;
+    float y = quaternion.y;
+    float z = quaternion.z;
+    float w = quaternion.w;
+
+    float sinr_cosp = 2.0f * (w * x + y * z);
+    float cosr_cosp = 1.0f - 2.0f * (x * x + y * y);
+    float roll = std::atan2(sinr_cosp, cosr_cosp);
+
+    float sinp = 2.0f * (w * y - z * x);
+    float pitch;
+    if (std::abs(sinp) >= 1.0f)
     {
-        yaw = std::atan2(matrix.m[2][0], matrix.m[2][2]);
-        roll = std::atan2(matrix.m[0][1], matrix.m[1][1]);
+        pitch = std::copysign(DirectX::XM_PI / 2.0f, sinp);
     }
     else
     {
-        yaw = std::atan2(-matrix.m[0][2], matrix.m[0][0]);
-        roll = 0.0f;
+		pitch = std::asin(sinp);
     }
+
+    float siny_cosp = 2.0f * (w * z + x * y);
+    float cosy_cosp = 1.0f - 2.0f * (y * y + z * z);
+    float yaw = std::atan2(siny_cosp, cosy_cosp);
 
     return Vector3(
         DirectX::XMConvertToDegrees(pitch),
         DirectX::XMConvertToDegrees(yaw),
         DirectX::XMConvertToDegrees(roll)
     );
-}
-
-Vector3 Transform::ExtractScale(const Matrix& matrix) const noexcept
-{
-    Vector3 scale;
-
-    scale.x = std::sqrt(matrix.m[0][0] * matrix.m[0][0] +
-        matrix.m[0][1] * matrix.m[0][1] +
-        matrix.m[0][2] * matrix.m[0][2]);
-
-    scale.y = std::sqrt(matrix.m[1][0] * matrix.m[1][0] +
-        matrix.m[1][1] * matrix.m[1][1] +
-        matrix.m[1][2] * matrix.m[1][2]);
-
-    scale.z = std::sqrt(matrix.m[2][0] * matrix.m[2][0] +
-        matrix.m[2][1] * matrix.m[2][1] +
-        matrix.m[2][2] * matrix.m[2][2]);
-
-    return scale;
 }
 
 void Transform::SetWorldPosition(const Vector3& position) noexcept
@@ -218,17 +250,20 @@ float Transform::GetWorldPositionZ() const noexcept
     return GetWorldPosition().z;
 }
 
-void Transform::SetWorldRotation(const Vector3& rotation) noexcept
+void Transform::SetWorldRotation(const Quaternion& quaternion) noexcept
 {
-    if (_owner == nullptr || _owner->GetParent() == nullptr)
-    {
-        SetLocalRotation(rotation);
-        return;
-    }
+    Matrix parentWorld = GetParentWorldMatrix();
+    Quaternion parentQuaternion = ExtractRotation(parentWorld);
+    Quaternion inverseQuaternion = parentQuaternion;
+    inverseQuaternion.Inverse(inverseQuaternion);
 
-    Vector3 parentRotation = _owner->GetParent()->_transform->GetWorldRotation();
-    Vector3 localRotation = rotation - parentRotation;
-    SetLocalRotation(localRotation);
+    _rotation = inverseQuaternion * quaternion;
+    MarkDirty();
+}
+
+void Transform::SetWorldRotation(const Vector3& eulerAngles) noexcept
+{
+    SetWorldRotation(EulerToQuaternion(eulerAngles));
 }
 
 void Transform::SetWorldRotation(float x, float y, float z) noexcept
@@ -236,62 +271,64 @@ void Transform::SetWorldRotation(float x, float y, float z) noexcept
     SetWorldRotation(Vector3(x, y, z));
 }
 
-Vector3 Transform::GetWorldRotation() const noexcept
+Vector3 Transform::GetWorldRotationEuler() const noexcept
 {
-    const Matrix& worldMatrix = GetWorldMatrix();
-    return ExtractRotation(worldMatrix);
+    return QuaternionToEuler(GetWorldRotationQuaternion());
+}
+
+Quaternion Transform::GetWorldRotationQuaternion() const noexcept
+{
+    Matrix parentWorldMatrix = GetParentWorldMatrix();
+    Quaternion parentQuaternion = ExtractRotation(parentWorldMatrix);
+
+    return parentQuaternion * _rotation;
 }
 
 void Transform::SetWorldRotationX(float x) noexcept
 {
-    Vector3 worldRot = GetWorldRotation();
-    worldRot.x = x;
-    SetWorldRotation(worldRot);
+    Vector3 euler = GetWorldRotationEuler();
+    euler.x = x;
+    SetWorldRotation(euler);
 }
 
 void Transform::SetWorldRotationY(float y) noexcept
 {
-    Vector3 worldRot = GetWorldRotation();
-    worldRot.y = y;
-    SetWorldRotation(worldRot);
+    Vector3 euler = GetWorldRotationEuler();
+    euler.y = y;
+    SetWorldRotation(euler);
 }
 
 void Transform::SetWorldRotationZ(float z) noexcept
 {
-    Vector3 worldRot = GetWorldRotation();
-    worldRot.z = z;
-    SetWorldRotation(worldRot);
+    Vector3 euler = GetWorldRotationEuler();
+    euler.z = z;
+    SetWorldRotation(euler);
 }
 
 float Transform::GetWorldRotationX() const noexcept
 {
-    return GetWorldRotation().x;
+    return GetWorldRotationEuler().x;
 }
 
 float Transform::GetWorldRotationY() const noexcept
 {
-    return GetWorldRotation().y;
+    return GetWorldRotationEuler().y;
 }
 
 float Transform::GetWorldRotationZ() const noexcept
 {
-    return GetWorldRotation().z;
+    return GetWorldRotationEuler().z;
 }
 
 void Transform::SetWorldScale(const Vector3& scale) noexcept
 {
-    if (_owner == nullptr || _owner->GetParent() == nullptr)
-    {
-        SetLocalScale(scale);
-        return;
-    }
+    Vector3 parentScale = ExtractScale(GetParentWorldMatrix());
 
-    Vector3 parentScale = _owner->GetParent()->_transform->GetWorldScale();
-    Vector3 localScale;
-    localScale.x = (parentScale.x != 0.0f) ? scale.x / parentScale.x : scale.x;
-    localScale.y = (parentScale.y != 0.0f) ? scale.y / parentScale.y : scale.y;
-    localScale.z = (parentScale.z != 0.0f) ? scale.z / parentScale.z : scale.z;
-    SetLocalScale(localScale);
+    _scale.x = (parentScale.x != 0.0f) ? scale.x / parentScale.x : scale.x;
+    _scale.y = (parentScale.y != 0.0f) ? scale.y / parentScale.y : scale.y;
+    _scale.z = (parentScale.z != 0.0f) ? scale.z / parentScale.z : scale.z;
+
+    MarkDirty();
 }
 
 void Transform::SetWorldScale(float x, float y, float z) noexcept
@@ -306,8 +343,7 @@ void Transform::SetWorldScale(float uniformScale) noexcept
 
 Vector3 Transform::GetWorldScale() const noexcept
 {
-    const Matrix& worldMatrix = GetWorldMatrix();
-    return ExtractScale(worldMatrix);
+    return ExtractScale(GetWorldMatrix());
 }
 
 void Transform::SetWorldScaleX(float x) noexcept
@@ -358,23 +394,32 @@ void Transform::TranslateWorld(float x, float y, float z) noexcept
     TranslateWorld(Vector3(x, y, z));
 }
 
-void Transform::RotateWorld(const Vector3& angles) noexcept
+void Transform::RotateLocal(const Vector3& eulerAngles) noexcept
 {
-    Vector3 worldRot = GetWorldRotation();
-    worldRot += angles;
-    SetWorldRotation(worldRot);
+    Quaternion deltaQuat = EulerToQuaternion(eulerAngles);
+    _rotation = _rotation * deltaQuat;
+    _rotation.Normalize();
+    MarkDirty();
+}
+
+void Transform::RotateLocal(float x, float y, float z) noexcept
+{
+    RotateLocal(Vector3(x, y, z));
+}
+
+void Transform::RotateWorld(const Vector3& eulerAngles) noexcept
+{
+    Quaternion worldQuaternion = GetWorldRotationQuaternion();
+    Quaternion deltaQuaternion = EulerToQuaternion(eulerAngles);
+    Quaternion newWorldQuaternion = worldQuaternion * deltaQuaternion;
+    newWorldQuaternion.Normalize();
+
+    SetWorldRotation(newWorldQuaternion);
 }
 
 void Transform::RotateWorld(float x, float y, float z) noexcept
 {
     RotateWorld(Vector3(x, y, z));
-}
-
-void Transform::RotateWorldZ(float angle) noexcept
-{
-    Vector3 worldRot = GetWorldRotation();
-    worldRot.z += angle;
-    SetWorldRotation(worldRot);
 }
 
 void Transform::ScaleByWorld(const Vector3& factor) noexcept

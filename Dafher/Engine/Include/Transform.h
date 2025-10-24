@@ -8,7 +8,7 @@ class Transform : public Component
 protected:
     Transform() noexcept
         : _position(Vector3::Zero)
-        , _rotation(Vector3::Zero)
+        , _rotation(Quaternion::Identity)
         , _scale(Vector3::One)
         , _localMatrix(DirectX::XMMatrixIdentity())
         , _worldMatrix(DirectX::XMMatrixIdentity())
@@ -40,7 +40,7 @@ public:
         MarkDirty();
     }
 
-    inline const Vector3& GetLocalPosition() const noexcept
+    inline Vector3 GetLocalPosition() const noexcept
     {
         return _position;
     }
@@ -90,21 +90,21 @@ public:
     float GetWorldPositionY() const noexcept;
     float GetWorldPositionZ() const noexcept;
 
-    inline void SetLocalRotation(const Vector3& rotation) noexcept
+    inline void SetLocalRotation(const Vector3& eulerAngles) noexcept
     {
-        _rotation = rotation;
+        _rotation = EulerToQuaternion(eulerAngles);
         MarkDirty();
     }
 
     inline void SetLocalRotation(float x, float y, float z = 0.0f) noexcept
     {
-        _rotation = Vector3(x, y, z);
+        _rotation = EulerToQuaternion(Vector3(x, y, z));
         MarkDirty();
     }
 
-    inline const Vector3& GetLocalRotation() const noexcept
+    inline Vector3 GetLocalRotationEuler() const noexcept
     {
-        return _rotation;
+        return QuaternionToEuler(_rotation);
     }
 
     inline void SetLocalRotationX(float x) noexcept
@@ -140,9 +140,11 @@ public:
         return _rotation.z;
     }
 
+	void SetWorldRotation(const Quaternion& rotation) noexcept;
     void SetWorldRotation(const Vector3& rotation) noexcept;
     void SetWorldRotation(float x, float y, float z = 0.0f) noexcept;
-    Vector3 GetWorldRotation() const noexcept;
+    Vector3 GetWorldRotationEuler() const noexcept;
+    Quaternion GetWorldRotationQuaternion() const noexcept;
 
     void SetWorldRotationX(float x) noexcept;
     void SetWorldRotationY(float y) noexcept;
@@ -236,27 +238,11 @@ public:
     void TranslateWorld(const Vector3& offset) noexcept;
     void TranslateWorld(float x, float y, float z = 0.0f) noexcept;
 
-    inline void RotateLocal(const Vector3& angles) noexcept
-    {
-        _rotation += angles;
-        MarkDirty();
-    }
-
-    inline void RotateLocal(float x, float y, float z = 0.0f) noexcept
-    {
-        _rotation += Vector3(x, y, z);
-        MarkDirty();
-    }
-
-    inline void RotateLocalZ(float angle) noexcept
-    {
-        _rotation.z += angle;
-        MarkDirty();
-    }
+    void RotateLocal(const Vector3& eulerAngles) noexcept;
+    void RotateLocal(float x, float y, float z = 0.0f) noexcept;
 
     void RotateWorld(const Vector3& angles) noexcept;
     void RotateWorld(float x, float y, float z = 0.0f) noexcept;
-    void RotateWorldZ(float angle) noexcept;
 
     inline void ScaleByLocal(const Vector3& factor) noexcept
     {
@@ -318,18 +304,23 @@ private:
 
     Matrix GetParentWorldMatrix() const noexcept;
     Vector3 ExtractPosition(const Matrix& matrix) const noexcept;
-    Vector3 ExtractRotation(const Matrix& matrix) const noexcept;
+    Quaternion ExtractRotation(const Matrix& matrix) const noexcept;
     Vector3 ExtractScale(const Matrix& matrix) const noexcept;
+
+    static Quaternion EulerToQuaternion(const Vector3& euler) noexcept;
+    static Vector3 QuaternionToEuler(const Quaternion& quaternion) noexcept;
 
 private:
     Vector3 _position;
-    Vector3 _rotation;
+    Quaternion _rotation;
     Vector3 _scale;
 
     mutable Matrix _localMatrix;
     mutable Matrix _worldMatrix;
     mutable bool _isLocalDirty;
     mutable bool _isWorldDirty;
+
+	constexpr static float TOLERANCE = 1e-8f;
 };
 
 #endif

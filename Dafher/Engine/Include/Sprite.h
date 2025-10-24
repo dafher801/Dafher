@@ -17,6 +17,7 @@ protected:
 		, _frameTimer(0.0f)
 		, _color(Vector4::One)
 		, _size(Vector2::Zero)
+		, _anchorPoint(Vector2(0.5f, 0.5f))
 		, _onAnimationComplete(nullptr)
 	{
 	}
@@ -83,6 +84,22 @@ public:
 	inline const Vector2& GetSize() const noexcept
 	{
 		return _size;
+	}
+
+	inline void SetAnchorPoint(float x, float y) noexcept
+	{
+		_anchorPoint.x = x;
+		_anchorPoint.y = y;
+	}
+
+	inline void SetAnchorPoint(const Vector2& anchor) noexcept
+	{
+		_anchorPoint = anchor;
+	}
+
+	inline const Vector2& GetAnchorPoint() const noexcept
+	{
+		return _anchorPoint;
 	}
 
 	inline void Play(bool loop = true) noexcept
@@ -158,6 +175,7 @@ private:
 
 	Color _color;
 	Vector2 _size;
+	Vector2 _anchorPoint;
 
 	std::function<void()> _onAnimationComplete;
 };

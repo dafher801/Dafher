@@ -8,12 +8,13 @@ bool Scene::Init()
 	SetName("Scene");
 
 	Node* object = Node::Create();
-	object->_transform->SetLocalPosition(Vector3(1000.0f, 500.0f, 0.0f));
+	object->_transform->SetLocalPosition(Vector3(0.0f, 0.0f, 100.0f));
+	object->_transform->SetWorldRotation(Vector3(45.0f, 0.0f, 0.0f));
 	object->SetName("123");
 	this->AddChild(object);
 
 	Node* object2 = Node::Create();
-	object2->_transform->SetLocalPosition(Vector3(-200.0f, 100.0f, 0.0f));
+	object2->_transform->SetLocalPosition(Vector3(-200.0f, 10.0f, 0.0f));
 	object2->SetName("456");
 	object->AddChild(object2);
 
@@ -23,6 +24,7 @@ bool Scene::Init()
 	{
 		std::string textureKey = "sprite_frame_0" + std::to_string(i + 1);
 		sprite->AddFrame(textureKey, 0.1f);
+		sprite->SetAnchorPoint(Vector2(0.5f, 0.5f));
 	}
 	sprite->Play(true);
 

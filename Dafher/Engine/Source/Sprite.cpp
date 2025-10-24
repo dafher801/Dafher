@@ -14,6 +14,7 @@ Sprite::Sprite(const std::string& textureKey) noexcept
     , _frameTimer(0.0f)
     , _color(Vector4::One)
     , _size(Vector2::Zero)
+    , _anchorPoint(Vector2(0.5f, 0.5f))
     , _onAnimationComplete(nullptr)
 {
     _texture = Engine::GetInstance()->GetTextureManager()->GetTexture(textureKey);
@@ -30,6 +31,7 @@ Sprite::Sprite(const std::string& textureKey, uint32 width, uint32 height) noexc
     , _frameTimer(0.0f)
     , _color(Vector4::One)
     , _size(Vector2(static_cast<float>(width), static_cast<float>(height)))
+    , _anchorPoint(Vector2(0.5f, 0.5f))
     , _onAnimationComplete(nullptr)
 {
     _texture = Engine::GetInstance()->GetTextureManager()->GetTexture(textureKey);
@@ -63,8 +65,12 @@ void Sprite::PostUpdate(float delta)
 		_isDirty = false;
     }
 
+    float offsetX = -_size.x * _anchorPoint.x;
+    float offsetY = -_size.y * _anchorPoint.y;
+
     Matrix spriteScaleMatrix = DirectX::XMMatrixScaling(_size.x, _size.y, 1.0f);
-    Matrix worldMatrix = spriteScaleMatrix * _owner->_transform->GetWorldMatrix();
+    Matrix anchorOffsetMatrix = DirectX::XMMatrixTranslation(offsetX, offsetY, 0.0f);    
+    Matrix worldMatrix = spriteScaleMatrix * anchorOffsetMatrix * _owner->_transform->GetWorldMatrix();
 
     Engine::GetInstance()->GetRenderer()->Draw(_texture, worldMatrix);
 }

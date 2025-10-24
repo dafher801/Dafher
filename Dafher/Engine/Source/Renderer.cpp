@@ -26,14 +26,14 @@ void Renderer::Draw(Texture* texture, const Matrix& worldMatrix) noexcept
     DXGI_SWAP_CHAIN_DESC desc;
     swapChain->GetDesc(&desc);
 
-    float width = static_cast<float>(desc.BufferDesc.Width);
-    float height = static_cast<float>(desc.BufferDesc.Height);
+    float halfWidth = static_cast<float>(desc.BufferDesc.Width) / 2.0f;
+    float halfHeight = static_cast<float>(desc.BufferDesc.Height) / 2.0f;
 
     Matrix viewMatrix = DirectX::XMMatrixIdentity();
     Matrix projectionMatrix = DirectX::XMMatrixOrthographicOffCenterLH(
-        0.0f, width,
-        height, 0.0f,
-        0.0f, 1.0f
+        -halfWidth, halfWidth,
+        halfHeight, -halfHeight,
+        0.0f, 1000.0f
     );
 
     MatrixData* matrixData = static_cast<MatrixData*>(mappedResource.pData);
@@ -149,10 +149,10 @@ bool Renderer::CreateShaders() noexcept
 bool Renderer::CreateBuffers() noexcept
 {
     Vertex vertices[] = {
-        { -0.5f, 0.5f, 0.0f, 0.0f, 1.0f },
-        { 0.5f, 0.5f, 0.0f, 1.0f, 1.0f },
-        { 0.5f, -0.5f, 0.0f, 1.0f, 0.0f },
-        { -0.5f, -0.5f, 0.0f, 0.0f, 0.0f }
+        { 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
+        { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f },
+        { 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }
     };
 
     D3D11_BUFFER_DESC vertexBufferDesc = {};
