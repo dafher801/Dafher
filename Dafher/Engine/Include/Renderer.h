@@ -7,11 +7,14 @@ class Renderer
 {	
 public:
 	Renderer() noexcept = default;
-	~Renderer() noexcept = default;
 
 	Renderer(const Renderer& renderer) noexcept = delete;
-	Renderer& operator=(const Renderer& renderer) noexcept = delete;
 	Renderer(Renderer&& renderer) noexcept = delete;
+	Renderer& operator=(const Renderer& renderer) noexcept = delete;
+	Renderer& operator=(Renderer&& renderer) noexcept = delete;
+
+public:
+	~Renderer() noexcept = default;
 
 public:
 	bool Init(const ComPtr<ID3D11Device>& device, const ComPtr<ID3D11DeviceContext>& deviceContext) noexcept;

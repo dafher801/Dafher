@@ -15,6 +15,12 @@ public:
     {
     }
 
+    Texture(const Texture& texture) = delete;
+    Texture(Texture&& texture) noexcept = delete;
+    Texture& operator=(const Texture& texture) = delete;
+    Texture& operator=(Texture&& texture) noexcept = delete;
+
+public:
     ~Texture() noexcept = default;
 
 public:

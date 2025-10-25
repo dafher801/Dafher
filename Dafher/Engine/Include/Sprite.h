@@ -31,9 +31,10 @@ protected:
 	Sprite& operator=(Sprite&& sprite) noexcept = delete;
 
 public:
-	CREATE(Sprite)
+	virtual ~Sprite() noexcept override = default;
 
-	~Sprite() noexcept = default;
+public:
+	CREATE(Sprite)
 
 public:
 	inline void SetSize(uint32 width, uint32 height) noexcept

@@ -11,12 +11,13 @@ public:
 	{
 	}
 
-	~GraphicDevice() noexcept = default;
-
 	GraphicDevice(const GraphicDevice& graphicDevice) = delete;
 	GraphicDevice(GraphicDevice&& graphicDevice) noexcept = delete;
 	GraphicDevice& operator=(const GraphicDevice& graphicDevice) = delete;
 	GraphicDevice& operator=(GraphicDevice&& graphicDevice) = delete;
+
+public:
+	~GraphicDevice() noexcept = default;
 
 public:
 	bool Init(HWND hWnd) noexcept;
@@ -24,6 +25,7 @@ public:
 	void EndFrame() noexcept;
 	void Clear() noexcept;
 
+public:
 	inline ComPtr<ID3D11Device> GetD11Device() const noexcept
 	{
 		return _device;
@@ -45,12 +47,12 @@ public:
 	}
 
 private:
-	float _aspectRatio;
-
 	ComPtr<ID3D11Device> _device;
 	ComPtr<ID3D11DeviceContext> _context;
 	ComPtr<IDXGISwapChain> _swapChain;
 	ComPtr<ID3D11RenderTargetView> _renderTargetView;
+
+	float _aspectRatio;
 };
 
 #endif

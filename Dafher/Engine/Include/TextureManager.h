@@ -8,12 +8,20 @@ class TextureManager
 {
 public:
     TextureManager() noexcept = default;
+
+	TextureManager(const TextureManager& textureManager) noexcept = delete;
+	TextureManager(TextureManager&& textureManager) noexcept = delete;
+	TextureManager& operator=(const TextureManager& textureManager) noexcept = delete;
+	TextureManager& operator=(TextureManager&& textureManager) noexcept = delete;
+
+public:
     ~TextureManager() noexcept = default;
 
 public:
     bool Init(const ComPtr<ID3D11Device>& device) noexcept;
 	void Clear() noexcept;
 
+public:
     inline Texture* GetTexture(const std::string& key) const noexcept
     {
         return _textures.at(key).get();

@@ -8,18 +8,16 @@ class Engine
 private:
 	Engine() noexcept;
 
-public:
 	Engine(const Engine& engine) = delete;
-	Engine& operator=(const Engine& engine) = delete;
 	Engine(Engine&& engine) noexcept = delete;
+	Engine& operator=(const Engine& engine) = delete;
+	Engine& operator=(Engine&& engine) = delete;
 
+public:
 	~Engine() noexcept;
 
+public:
 	static Engine* GetInstance() noexcept;
-
-	void SetCurrentScene(class Scene* scene) noexcept;
-
-	void ChangeScene(class Scene* scene) noexcept;
 
 public:
 	void Init() noexcept;
@@ -28,6 +26,10 @@ public:
 	void PostUpdate() noexcept;
 	void Clear() noexcept;
 
+	void SetCurrentScene(class Scene* scene) noexcept;
+	void ChangeScene(class Scene* scene) noexcept;
+
+public:
 	inline class GraphicDevice* GetDevice() const noexcept
 	{
 		return _graphicDevice.get();

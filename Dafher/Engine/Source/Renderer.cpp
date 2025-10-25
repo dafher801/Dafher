@@ -21,7 +21,17 @@ void Renderer::Draw(Texture* texture, const Matrix& worldMatrix) noexcept
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     ASSERT_HR(_deviceContext->Map(_quadConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
 
-	ComPtr<IDXGISwapChain> swapChain = Engine::GetInstance()->GetDevice()->GetSwapChain();
+    Vector3 cameraPosition = Vector3(0.0f, 0.0f, 10.0f);
+    Vector3 targetPosition = Vector3(0.0f, 0.0f, 0.0f); 
+    Vector3 upVector = Vector3(0.0f, 1.0f, 0.0f);       
+
+    Matrix viewMatrix = DirectX::XMMatrixLookAtLH(
+        DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&cameraPosition)),
+        DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&targetPosition)),
+        DirectX::XMLoadFloat3(reinterpret_cast<const DirectX::XMFLOAT3*>(&upVector))
+    );
+
+    ComPtr<IDXGISwapChain> swapChain = Engine::GetInstance()->GetDevice()->GetSwapChain();
 
     DXGI_SWAP_CHAIN_DESC desc;
     swapChain->GetDesc(&desc);
@@ -29,10 +39,9 @@ void Renderer::Draw(Texture* texture, const Matrix& worldMatrix) noexcept
     float halfWidth = static_cast<float>(desc.BufferDesc.Width) / 2.0f;
     float halfHeight = static_cast<float>(desc.BufferDesc.Height) / 2.0f;
 
-    Matrix viewMatrix = DirectX::XMMatrixIdentity();
     Matrix projectionMatrix = DirectX::XMMatrixOrthographicOffCenterLH(
-        -halfWidth, halfWidth,
-        halfHeight, -halfHeight,
+        halfWidth, -halfWidth,
+        -halfHeight, halfHeight,
         0.0f, 1000.0f
     );
 
@@ -149,10 +158,10 @@ bool Renderer::CreateShaders() noexcept
 bool Renderer::CreateBuffers() noexcept
 {
     Vertex vertices[] = {
-        { 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-        { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f },
-        { 1.0f, 0.0f, 0.0f, 1.0f, 0.0f },
-        { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }
+        { 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
+        { 1.0f, 1.0f, 0.0f, 1.0f, 0.0f },
+        { 1.0f, 0.0f, 0.0f, 1.0f, 1.0f },
+        { 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } 
     };
 
     D3D11_BUFFER_DESC vertexBufferDesc = {};

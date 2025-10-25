@@ -25,23 +25,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Engine.cpp" />
-    <ClCompile Include="Source\GraphicDevice.cpp" />
-    <ClCompile Include="Source\MovementComponent.cpp" />
-    <ClCompile Include="Source\Node.cpp" />
-    <ClCompile Include="Source\Renderer.cpp" />
-    <ClCompile Include="Source\Scene.cpp" />
-    <ClCompile Include="Source\Sprite.cpp" />
-    <ClCompile Include="Source\Texture.cpp" />
-    <ClCompile Include="Source\TextureManager.cpp" />
-    <ClCompile Include="Source\Transform.cpp" />
-    <ClCompile Include="Source\Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Include\Component.h" />
     <ClInclude Include="Include\Engine.h" />
     <ClInclude Include="Include\GraphicDevice.h" />
-    <ClInclude Include="Include\MovementComponent.h" />
+    <ClInclude Include="Include\Movement.h" />
     <ClInclude Include="Include\Node.h" />
     <ClInclude Include="Include\Renderer.h" />
     <ClInclude Include="Include\Scene.h" />
@@ -51,6 +38,19 @@
     <ClInclude Include="Include\TextureManager.h" />
     <ClInclude Include="Include\Transform.h" />
     <ClInclude Include="Include\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\GraphicDevice.cpp" />
+    <ClCompile Include="Source\Movement.cpp" />
+    <ClCompile Include="Source\Node.cpp" />
+    <ClCompile Include="Source\Renderer.cpp" />
+    <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\Sprite.cpp" />
+    <ClCompile Include="Source\Texture.cpp" />
+    <ClCompile Include="Source\TextureManager.cpp" />
+    <ClCompile Include="Source\Transform.cpp" />
+    <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

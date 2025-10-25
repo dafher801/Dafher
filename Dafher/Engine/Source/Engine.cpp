@@ -13,7 +13,6 @@ Engine::Engine() noexcept
 	, _currentScene(nullptr)
 	, _deltaTime(0.0f)
 {
-
 }
 
 Engine::~Engine() noexcept
@@ -34,27 +33,10 @@ Engine* Engine::GetInstance() noexcept
 	return instance;
 }
 
-void Engine::SetCurrentScene(Scene* scene) noexcept
-{
-	assert(scene != nullptr);
-
-	_currentScene.reset(scene);
-	_currentScene->Init();
-}
-
-void Engine::ChangeScene(Scene* scene) noexcept
-{
-	assert(scene != nullptr);
-
-	_currentScene->Clear();
-	_currentScene.reset(scene);
-	_currentScene->Init();
-}
-
 void Engine::Init() noexcept
 {
 	_window->Init();
-	_graphicDevice->Init(_window->_hWnd);
+	_graphicDevice->Init(_window->GetHWnd());
 	_textureManager->Init(GetDevice()->GetD11Device());
 	_renderer->Init(GetDevice()->GetD11Device(), GetDevice()->GetContext());
 	_currentScene = std::unique_ptr<Scene>(Scene::Create());
@@ -87,6 +69,23 @@ void Engine::PostUpdate() noexcept
 void Engine::Clear() noexcept
 {
 	_graphicDevice->Clear();
+}
+
+void Engine::SetCurrentScene(Scene* scene) noexcept
+{
+	assert(scene != nullptr);
+
+	_currentScene.reset(scene);
+	_currentScene->Init();
+}
+
+void Engine::ChangeScene(Scene* scene) noexcept
+{
+	assert(scene != nullptr);
+
+	_currentScene->Clear();
+	_currentScene.reset(scene);
+	_currentScene->Init();
 }
 
 void Engine::CalculateDeltaTime() noexcept

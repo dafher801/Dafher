@@ -14,13 +14,19 @@ protected:
 	{
 	}
 
-	inline Component(const Component& component) noexcept = delete;
-	inline Component(Component&& component) noexcept = delete;
-	inline Component& operator=(const Component& component) noexcept = delete;
-	inline Component& operator=(Component&& component) noexcept = delete;
+	Component(const Component& component) noexcept = delete;
+	Component(Component&& component) noexcept = delete;
+	Component& operator=(const Component& component) noexcept = delete;
+	Component& operator=(Component&& component) noexcept = delete;
 
 public:
 	virtual ~Component() noexcept = default;
+
+public:
+	virtual bool Init() { return true; }
+	virtual void PreUpdate(float deltaTime) {}
+	virtual void Update(float deltaTime) {}
+	virtual void PostUpdate(float deltaTime) {}
 
 public:
 	inline void SetEnabled(bool enabled) noexcept
@@ -43,14 +49,9 @@ public:
 		return _owner;
 	}
 
-	virtual bool Init() = 0;
-	virtual void PreUpdate(float deltaTime) = 0;
-	virtual void Update(float deltaTime) = 0;
-	virtual void PostUpdate(float deltaTime) = 0;
-
 protected:
-	bool _enabled;
 	Node* _owner;
+	bool _enabled;
 };
 
 #endif

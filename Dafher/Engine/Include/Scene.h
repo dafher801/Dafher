@@ -14,12 +14,12 @@ protected:
 	Scene& operator=(Scene&& scene) noexcept = delete;
 
 public:
-	CREATE(Scene)
-
-	~Scene() noexcept = default;
+	virtual ~Scene() noexcept override = default;
 
 public:
+	CREATE(Scene)
 
+public:
 	virtual bool Init() override;
 };
 

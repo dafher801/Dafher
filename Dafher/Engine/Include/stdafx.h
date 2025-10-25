@@ -60,8 +60,11 @@ struct MatrixData
 
 #define ASSERT_HR(__HR__) { HRESULT HR = __HR__; assert(SUCCEEDED(HR)); }
 
+#define MAX(__X__, __Y__) (((__X__) > (__Y__)) ? (__X__) : (__Y__))
+#define MIN(__X__, __Y__) (((__X__) < (__Y__)) ? (__X__) : (__Y__))
+
 #define CREATE(__TYPE_NAME__) \
-    template<typename... Args> \
+    template <typename... Args> \
     static __TYPE_NAME__* Create(Args&&... args) \
     { \
         __TYPE_NAME__* object = new __TYPE_NAME__(std::forward<Args>(args)...); \

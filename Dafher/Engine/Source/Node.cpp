@@ -2,107 +2,116 @@
 #include "Engine.h"
 #include "GraphicDevice.h"
 
-void Node::RemoveChild(Node* child) noexcept
-{
-    assert(child != nullptr);
-
-    auto it = std::find_if(_children.begin(), _children.end(),
-        [child](const std::unique_ptr<Node>& node)
-        {
-            return node.get() == child;
-        });
-
-    if (it != _children.end())
-    {
-        (*it)->_parent = nullptr;
-        _children.erase(it);
-    }
-}
-
-Node* Node::GetChildByName(const std::string& name) const noexcept
-{
-    for (const auto& child : _children)
-    {
-        if (child->_name == name)
-        {
-            return child.get();
-        }
-    }
-
-    return nullptr;
-}
-
 bool Node::Init()
 {
-    _transform = this->AddComponent<Transform>();
+	_transform = this->AddComponent<Transform>();
 
-    for (auto& child : _children)
-    {
-        child->Init();
-    }
+	for (auto& child : _children)
+	{
+		child->Init();
+	}
 
-    return true;
+	return true;
 }
 
 void Node::PreUpdate(float delta)
 {
-    for (auto& component : _components)
-    {
-        if (component->IsEnabled())
-        {
-            component->PreUpdate(delta);
-        }
-    }
+	for (auto& component : _components)
+	{
+		if (component->IsEnabled())
+		{
+			component->PreUpdate(delta);
+		}
+	}
 
-    for (auto& child : _children)
-    {
-        if (child->IsEnabled())
-        {
-            child->PreUpdate(delta);
-        }
-    }
+	for (auto& child : _children)
+	{
+		if (child->IsEnabled())
+		{
+			child->PreUpdate(delta);
+		}
+	}
 }
 
 void Node::Update(float delta)
 {
-    for (auto& component : _components)
-    {
-        if (component->IsEnabled())
-        {
-            component->Update(delta);
-        }
-    }
+	for (auto& component : _components)
+	{
+		if (component->IsEnabled())
+		{
+			component->Update(delta);
+		}
+	}
 
-    for (auto& child : _children)
-    {
-        if (child->IsEnabled())
-        {
-            child->Update(delta);
-        }
-    }
+	for (auto& child : _children)
+	{
+		if (child->IsEnabled())
+		{
+			child->Update(delta);
+		}
+	}
 }
 
 void Node::PostUpdate(float delta)
 {
-    for (auto& component : _components)
-    {
-        if (component->IsEnabled())
-        {
-            component->PostUpdate(delta);
-        }
-    }
+	for (auto& component : _components)
+	{
+		if (component->IsEnabled())
+		{
+			component->PostUpdate(delta);
+		}
+	}
 
-    for (auto& child : _children)
-    {
-        if (child->IsEnabled())
-        {
-            child->PostUpdate(delta);
-        }
-    }
+	for (auto& child : _children)
+	{
+		if (child->IsEnabled())
+		{
+			child->PostUpdate(delta);
+		}
+	}
 }
 
 void Node::Clear()
 {
-    _components.clear();
-    _children.clear();
+	_components.clear();
+	_children.clear();
+}
+
+void Node::AddChild(Node* child) noexcept
+{
+	assert(child != nullptr);
+
+	_children.push_back(std::unique_ptr<Node>(child));
+	child->_parent = this;
+	child->_transform->MarkWorldMatrixDirty();
+}
+
+void Node::RemoveChild(Node* child) noexcept
+{
+	assert(child != nullptr);
+
+	auto it = std::find_if(_children.begin(), _children.end(),
+		[child](const std::unique_ptr<Node>& node)
+		{
+			return node.get() == child;
+		});
+
+	if (it != _children.end())
+	{
+		(*it)->_parent = nullptr;
+		_children.erase(it);
+	}
+}
+
+Node* Node::GetChildByName(const std::string& name) const noexcept
+{
+	for (const auto& child : _children)
+	{
+		if (child->_name == name)
+		{
+			return child.get();
+		}
+	}
+
+	return nullptr;
 }
